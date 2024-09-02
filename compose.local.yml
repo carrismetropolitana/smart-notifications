@@ -1,0 +1,25 @@
+# # #
+name: tml-smart-notifications-local
+
+volumes:
+    redis:
+
+networks:
+    redis:
+
+# # #
+
+services:
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    redis:
+        image: redis:alpine
+        container_name: redis
+        restart: always
+        networks:
+            - common
+        volumes:
+            - redis:/data
+        ports:
+            - 6379:6379

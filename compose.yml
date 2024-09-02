@@ -1,0 +1,114 @@
+# # #
+
+name: smart-notifications
+
+volumes:
+    certbotdata:
+    redisdbdata:
+
+# # #
+
+services:
+    #
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    watchtower:
+        image: containrrr/watchtower
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 30s
+            resources:
+                limits:
+                    memory: 100mb
+        logging:
+            options:
+                max-size: '1m'
+                max-file: '1'
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            - WATCHTOWER_POLL_INTERVAL=10
+            - WATCHTOWER_CLEANUP=TRUE
+            - WATCHTOWER_INCLUDE_STOPPED=TRUE
+            - WATCHTOWER_REVIVE_STOPPED=TRUE
+            - WATCHTOWER_ROLLING_RESTART=TRUE
+
+        # # # # # # # # # # # # # # # # # # # # #
+        # # # # # # # # # # # # # # # # # # # # #
+
+    server:
+        image: ghcr.io/carrismetropolitana/smart-notifications-api-server:production
+        restart: always
+        ports:
+            - 5050:5050
+        env_file:
+            - ./.env.production
+        depends_on:
+            redisdb:
+                condition: service_healthy
+                restart: true
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    certbot:
+        image: certbot/certbot
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 30s
+            resources:
+                limits:
+                    memory: 100mb
+        logging:
+            options:
+                max-size: '1m'
+                max-file: '1'
+        volumes:
+            - ./letsencrypt:/etc/letsencrypt
+            - certbotdata:/var/www/certbot
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    redisdb:
+        image: mongo:latest
+        volumes:
+            - redisdbdata:/data/db
+        env_file:
+            - ./.env.production
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongosh
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    nginx:
+        image: nginx:alpine-slim
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 30s
+            resources:
+                limits:
+                    memory: 1gb
+        logging:
+            options:
+                max-size: '1m'
+                max-file: '1'
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./nginx/uptime.conf:/etc/nginx/conf.d/uptime.conf:ro
+            - ./letsencrypt:/etc/letsencrypt:ro
+            - certbotdata:/var/www/certbot:ro
+        ports:
+            - 80:80
+            - 443:443
+        command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''

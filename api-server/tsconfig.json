@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"baseUrl": ".",
+		"rootDir": ".",
+		"module": "ES2022",
+		"moduleResolution": "Bundler",
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"allowJs": true,
+		"outDir": "dist",
+		"sourceMap": true,
+		"esModuleInterop": true
+	},
+	"exclude": ["**/node_modules", "**/.*/", "**/dist/"]
+}

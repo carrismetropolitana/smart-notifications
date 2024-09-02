@@ -14,11 +14,12 @@
   },
   "dependencies": {
     "@fastify/mongodb": "8.0.0",
-    "@fastify/type-provider-typebox": "^4.1.0",
-    "@sinclair/typebox": "^0.33.7",
+    "@turf/turf": "^7.1.0",
     "dotenv": "16.4.5",
     "fastify": "4.28.1",
-    "jsonwebtoken": "9.0.2"
+    "jsonwebtoken": "9.0.2",
+    "redis": "^4.7.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@carrismetropolitana/eslint": "20240722.1548.55",
@@ -35,5 +36,6 @@
     "ts-node": "10.9.2",
     "tsx": "4.17.0",
     "typescript": "5.5.4"
-  }
+  },
+  "packageManager": "yarn@4.4.0+sha512.91d93b445d9284e7ed52931369bc89a663414e5582d00eea45c67ddc459a2582919eece27c412d6ffd1bd0793ff35399381cb229326b961798ce4f4cc60ddfdb"
 }

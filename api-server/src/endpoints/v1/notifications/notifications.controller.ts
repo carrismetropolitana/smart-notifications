@@ -1,9 +1,9 @@
 import { bindMethods } from "@/common/utils";
 import NotificationsService from "./notifications.service";
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import HttpException from "@/common/http-exception";
 import HttpStatus from "@/common/http-status";
-import { INotification } from "@/models/notification";
+import { INotification, INotificationValidator } from "@/models/notification";
 
 class NotificationsController {
 
@@ -16,17 +16,28 @@ class NotificationsController {
 		bindMethods(NotificationsController.prototype, this);
 	}
 
-    async createNotification(request: FastifyRequest< { Body: INotification }>) {
+    async createNotification(request: FastifyRequest< {Params: { userId: string }, Body: INotification }>, reply: FastifyReply) {
         const notification = request.body;
-        return notification;
+        const userId = request.params.userId;
+
+        // Validate notification
+        const validation = await INotificationValidator.safeParseAsync(notification);
+        
+        if (!validation.success) {
+            reply.code(HttpStatus.BAD_REQUEST).send({
+                statusCode: HttpStatus.BAD_REQUEST,
+                error: "Bad Request",
+                message: "Invalid notification",
+                errors: validation.error.errors,
+            });
+        }
+
+        return this.service.createNotification(userId, notification);
     }
 
-    async updateNotification() {
-        throw new HttpException(HttpStatus.NOT_IMPLEMENTED, 'Not implemented');
-    }
-
-    async getNotifications() {
-        throw new HttpException(HttpStatus.NOT_IMPLEMENTED, 'Not implemented');
+    async deleteNotification(request: FastifyRequest<{ Params: { id: string } }>) {
+        const id = request.params.id;
+        return this.service.deleteNotification(id);
     }
 }
 

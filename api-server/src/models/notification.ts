@@ -1,13 +1,22 @@
-import { Static, Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
-export const INotificationValidator = Type.Object({
-    line_id: Type.String(),
-    stop_id: Type.String(),
-    distance: Type.Number(),
-    distance_unit: Type.Union([Type.Literal('km'), Type.Literal('m'), Type.Literal('min')]),
-    start_time: Type.Number(),
-    end_time: Type.Number(),
-    week_days: Type.Array(Type.String()),
+export const INotificationValidator = z.object({
+    id: z.string(),
+    line_id: z.string(),
+    stop_id: z.string(),
+    distance: z.number(),
+    distance_unit: z.enum(['kilometers', 'meters']),
+    start_time: z.number().gte(0).lt(86400),
+    end_time: z.number().gt(0).lte(86400),
+    week_days: z.array(z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])),
+}).superRefine(({start_time, end_time}, ctx) => {
+    if (start_time > end_time) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Start time must be less than end time',
+            path: ['start_time', 'end_time'],
+        })
+    }
 })
 
-export type INotification = Static<typeof INotificationValidator>
+export type INotification = z.infer<typeof INotificationValidator>

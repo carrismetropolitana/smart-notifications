@@ -15,9 +15,8 @@ server.register((instance, opts, next) => {
 
     // instance.addHook('onRequest', async (request, reply) => await authMiddleware(request, reply));
 
-    instance.post('/', controller.createNotification);
-    instance.put('/', controller.updateNotification);
-    instance.delete('/', controller.getNotifications);
+    instance.post('/:userId', controller.createNotification);
+    instance.delete('/:userId', controller.deleteNotification);
 
     next();
 }, { prefix: namespace });

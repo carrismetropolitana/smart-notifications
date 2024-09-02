@@ -72,3 +72,22 @@ export async function verifyJWT<T = Record<string, any>>(token: string) : Promis
 		return null;
 	}
 }
+
+/**
+ * Speed-Time Distance Calculator
+ * @param minutes The number of minutes
+ * @param speed The number of km/h
+ * @returns The number of meters
+ */
+export function speedTimeDistanceCalculator(time: number, speed: number): number {
+    // Convert speed from km/h to m/s
+    const speedInMetersPerSecond = speed / 3.6;
+    
+    // Convert time from minutes to seconds
+    const timeInSeconds = time * 60;
+    
+    // Calculate distance in meters
+    const distanceInMeters = speedInMetersPerSecond * timeInSeconds;
+    
+    return distanceInMeters;
+}

@@ -33,7 +33,13 @@ class NotificationsService {
                 geo_fence: geoFence,
             };
 
-            await this.redisService.set(`notification:${userId}:${notification.id}`, JSON.stringify(notificationData));
+            // Set notifications for in redis
+            const promises = notification.week_days.map(async weekDay => {
+                const key = `notification:${weekDay}:${notification.start_time}:${notification.end_time}:${userId}:${notification.id}`;
+                return this.redisService.set(key, JSON.stringify(notificationData));
+            });
+            await Promise.all(promises);
+
             return notificationData;
         } catch (error: any) {
             if (error.statusCode === HttpStatus.NOT_FOUND) {

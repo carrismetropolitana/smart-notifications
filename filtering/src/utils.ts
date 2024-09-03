@@ -3,13 +3,15 @@ import { RedisClientType } from "redis";
 /**
  * Finds Redis keys that match the pattern "notification:*" and checks if a number is within a range defined by the key.
  * @param variableNumber The number to compare against the ranges defined in the keys.
+ * @param weekDay The current week day.
  * @returns A promise that resolves to an array of matching keys.
  */
 export async function findKeysInRange(
 	client: RedisClientType,
+	weekDay: string,
 	variableNumber: number
 ): Promise<string[]> {
-	const pattern = 'notification:*';
+	const pattern = `notification:${weekDay}:*`;
 	let cursor = 0;
 	const matchingKeys: string[] = [];
 
@@ -26,8 +28,8 @@ export async function findKeysInRange(
 		// Filter the keys based on the range condition
 		keys.forEach((key) => {
 			const parts = key.split(':');
-			const firstNumber = parseInt(parts[1], 10);
-			const secondNumber = parseInt(parts[2], 10);
+			const firstNumber = parseInt(parts[2], 10);
+			const secondNumber = parseInt(parts[3], 10);
 
 			// Check if the variable number is within the range
 			if (
@@ -88,4 +90,17 @@ export function getCurrentSecondInDay(): number {
 	const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
 	return totalSeconds;
+}
+
+/**
+ * Gets the current week day.
+ * @returns The current week day.
+ */
+export function getCurrentWeekDay(): string {
+	const now = new Date();
+	// Get the current day of the week
+	const dayOfWeek = now.getDay();
+	
+	const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+	return weekday[dayOfWeek];	
 }

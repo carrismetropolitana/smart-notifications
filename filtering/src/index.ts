@@ -1,8 +1,9 @@
 import { CronJob } from "cron";
 import RedisService from "./services/redis.service";
-import { getCurrentSecondInDay, findKeysInRange, clearCollectionByPattern } from "./utils";
+import { getCurrentSecondInDay, findKeysInRange, clearCollectionByPattern, getCurrentWeekDay } from "./utils";
 
 const redisService = new RedisService({ url: process.env.REDIS_URL as string });
+redisService.connect();
 
 
 /**
@@ -14,12 +15,16 @@ const redisService = new RedisService({ url: process.env.REDIS_URL as string });
  * The new key is then set in Redis with the data retrieved from the original key.
  */
 new CronJob(
-	'0 */5 * * * *', // Every 5 minutes
+	// Every 10 seconds
+	'*/10 * * * * *',
 	async () => {
+		const timer = new Date().getTime();
         // Get Keys that are in time range
 		const currentSecond = getCurrentSecondInDay();
+		const weekDay = getCurrentWeekDay();
 		const matchingKeys = await findKeysInRange(
 			redisService.clientInstance,
+			weekDay,
 			currentSecond
 		);
 
@@ -39,6 +44,8 @@ new CronJob(
 				redisService.set(newKey, data);
 			}
 		}
+
+		console.log(`⤷ Filtering completed in ${new Date().getTime() - timer}ms`);
 	},
 	null, // On complete
 	true, // Start the job immediately

@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /app/bin/file  /app/cmd/filter-service
+RUN go build -o /app/bin/file  /app/cmd/notifications-service
 
 
 # ==== RUNNER ====
@@ -18,6 +18,6 @@ FROM golang:1.23
 
 WORKDIR /app
 
-COPY --from=builder /app/bin/file /app/filter-service
+COPY --from=builder /app/bin/file /app/notifications-service
 
-CMD ["/app/filter-service"]
+CMD ["/app/notifications-service"]

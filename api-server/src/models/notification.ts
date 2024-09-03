@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const INotificationValidator = z.object({
     id: z.string(),
+    pattern_id: z.string(),
     line_id: z.string(),
     stop_id: z.string(),
     distance: z.number(),

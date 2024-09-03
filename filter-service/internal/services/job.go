@@ -12,6 +12,9 @@ func StartCronJobs(redisService *RedisService) {
 	ticker := time.NewTicker(60 * time.Second) // Creates a new ticker that ticks every 60 seconds (1 minute)
 	defer ticker.Stop()                        // Ensures that the ticker stops when the function exits to free up resources
 
+	// Run first time
+	runCronJobs(redisService)
+
 	// This loop runs every time the ticker ticks (i.e., every minute).
 	for range ticker.C {
 		runCronJobs(redisService) // Call the function to execute cron jobs

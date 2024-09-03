@@ -36,8 +36,21 @@ services:
             - WATCHTOWER_REVIVE_STOPPED=TRUE
             - WATCHTOWER_ROLLING_RESTART=TRUE
 
-        # # # # # # # # # # # # # # # # # # # # #
-        # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    filter-service:
+        image: ghcr.io/carrismetropolitana/smart-notifications-filter-service:production
+        restart: always
+        env_file:
+            - ./.env.production
+        depends_on:
+            redisdb:
+                condition: service_healthy
+                restart: true
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
 
     server:
         image: ghcr.io/carrismetropolitana/smart-notifications-api-server:production

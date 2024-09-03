@@ -128,3 +128,5 @@ results/
 nginx/uptime.conf
 
 build/
+
+.bin

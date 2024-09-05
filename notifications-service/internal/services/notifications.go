@@ -10,7 +10,7 @@ import (
 )
 
 func NotificationsService( redisService *RedisService, vehiclesHashMap *map[string]models.Vehicle){
-	ticker := time.NewTicker(10 * time.Second)   
+	ticker := time.NewTicker(3 * time.Second)   
 	defer ticker.Stop()
 		
 	notificationService(redisService, vehiclesHashMap) // Run immediately notificationService
@@ -83,17 +83,14 @@ func getNotifications(redisService *RedisService) ([]models.Notification, error)
 
 	//Cast values to Notification
 	for _, value := range values {
-		notificationWrapper := struct {
-			Data models.Notification `json:"data"`
-		}{}
-
+		notificationWrapper := models.Notification{}
 		err = json.Unmarshal([]byte(value.(string)), &notificationWrapper)
 		if err != nil {
 			fmt.Printf("Error unmarshalling notification: %v\n", err)
 			return notifications, err
 		}
 
-		notifications = append(notifications, notificationWrapper.Data)
+		notifications = append(notifications, notificationWrapper)
 	}
 
 	return notifications, nil

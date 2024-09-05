@@ -3,13 +3,12 @@ import { z } from 'zod'
 export const INotificationValidator = z.object({
     id: z.string(),
     pattern_id: z.string(),
-    line_id: z.string(),
     stop_id: z.string(),
     distance: z.number(),
     distance_unit: z.enum(['kilometers', 'meters']),
     start_time: z.number().gte(0).lt(86400),
     end_time: z.number().gt(0).lte(86400),
-    week_days: z.array(z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])),
+    week_days: z.array(z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])).nonempty(),
 }).superRefine(({start_time, end_time}, ctx) => {
     if (start_time > end_time) {
         ctx.addIssue({

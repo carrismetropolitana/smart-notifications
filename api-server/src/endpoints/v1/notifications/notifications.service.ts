@@ -1,36 +1,37 @@
 import HttpException from "@/common/http-exception";
 import HttpStatus from "@/common/http-status";
+import { calculateGeoFence } from "@/common/utils";
 import { INotification } from "@/models/notification";
+import PatternService from "@/services/pattern.service";
 import RedisService from "@/services/redis.service";
 import StopsService from "@/services/stops.service";
-import * as turf from "@turf/turf";
+
 
 class NotificationsService {
     private readonly redisService: RedisService
     private readonly stopsService: StopsService
+    private readonly patternService: PatternService
 
     constructor(){
         this.redisService = RedisService.getInstance();
         this.stopsService = StopsService.getInstance();
+        this.patternService = PatternService.getInstance();
     }
 
     async createNotification(userId: string, notification: INotification) : Promise<any> {
         try {
-            const stop = await this.stopsService.getStop(notification.stop_id);
-
-            const geoPoint = turf.point([Number(stop.lat), Number(stop.lon)]);  
-            const geoFence = turf.buffer(geoPoint, notification.distance, { units: notification.distance_unit });
-
+            const pattern = await this.patternService.getPattern(notification.pattern_id);
+            const geoFence = await calculateGeoFence(pattern[0], notification.stop_id, notification.distance);
+        
             const notificationData = {
                 id: notification.id,
-                line_id: notification.line_id,
+                pattern_id: notification.pattern_id,
                 stop_id: notification.stop_id,
                 distance: notification.distance,
-                distance_unit: notification.distance_unit,
                 start_time: notification.start_time,
                 end_time: notification.end_time,
                 week_days: notification.week_days,
-                geo_fence: geoFence,
+                geojson: geoFence,
             };
 
             // Set notifications for in redis

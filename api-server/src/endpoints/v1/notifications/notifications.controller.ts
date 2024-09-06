@@ -1,7 +1,6 @@
 import { bindMethods } from "@/common/utils";
 import NotificationsService from "./notifications.service";
 import { FastifyReply, FastifyRequest } from "fastify";
-import HttpException from "@/common/http-exception";
 import HttpStatus from "@/common/http-status";
 import { INotification, INotificationValidator } from "@/models/notification";
 
@@ -16,9 +15,8 @@ class NotificationsController {
 		bindMethods(NotificationsController.prototype, this);
 	}
 
-    async createNotification(request: FastifyRequest< {Params: { userId: string }, Body: INotification }>, reply: FastifyReply) {
+    async createNotification(request: FastifyRequest< { Body: INotification }>, reply: FastifyReply) {
         const notification = request.body;
-        const userId = request.params.userId;
 
         // Validate notification
         const validation = await INotificationValidator.safeParseAsync(notification);
@@ -32,7 +30,7 @@ class NotificationsController {
             });
         }
 
-        return this.service.createNotification(userId, notification);
+        return this.service.createNotification(notification);
     }
 
     async deleteNotification(request: FastifyRequest<{ Params: { id: string } }>) {

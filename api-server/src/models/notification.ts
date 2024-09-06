@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export const INotificationValidator = z.object({
+    user_id: z.string(),
     id: z.string(),
     pattern_id: z.string(),
     stop_id: z.string(),

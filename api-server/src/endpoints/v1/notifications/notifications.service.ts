@@ -18,12 +18,13 @@ class NotificationsService {
         this.patternService = PatternService.getInstance();
     }
 
-    async createNotification(userId: string, notification: INotification) : Promise<any> {
+    async createNotification(notification: INotification) : Promise<any> {
         try {
             const pattern = await this.patternService.getPattern(notification.pattern_id);
             const geoFence = await calculateGeoFence(pattern[0], notification.stop_id, notification.distance);
         
             const notificationData = {
+                user_id: notification.user_id,
                 id: notification.id,
                 pattern_id: notification.pattern_id,
                 stop_id: notification.stop_id,
@@ -36,7 +37,7 @@ class NotificationsService {
 
             // Set notifications for in redis
             const promises = notification.week_days.map(async weekDay => {
-                const key = `notification:${weekDay}:${notification.start_time}:${notification.end_time}:${userId}:${notification.id}`;
+                const key = `notification:${weekDay}:${notification.start_time}:${notification.end_time}:${notification.user_id}:${notification.id}`;
                 return this.redisService.set(key, JSON.stringify(notificationData));
             });
             await Promise.all(promises);

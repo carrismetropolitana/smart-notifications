@@ -60,7 +60,11 @@ export default class RedisService {
         return this.client.get(key);
     }
 
-    async del(key: string) {
+    async del(key: string | string[]) {
         return this.client.del(key);
+    }
+
+    async keys(pattern: string) {
+        return this.client.keys(pattern);
     }
 }

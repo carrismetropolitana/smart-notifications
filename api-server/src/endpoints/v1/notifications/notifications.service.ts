@@ -35,6 +35,10 @@ class NotificationsService {
                 geojson: geoFence,
             };
 
+            //Delete all notifications for this user_id:notification_id
+            const keys = await this.redisService.keys(`notification:*:${notification.user_id}:${notification.id}`);
+            keys.length && await this.redisService.del(keys);
+
             // Set notifications for in redis
             const promises = notification.week_days.map(async weekDay => {
                 const key = `notification:${weekDay}:${notification.start_time}:${notification.end_time}:${notification.user_id}:${notification.id}`;

@@ -105,7 +105,6 @@ export function speedTimeDistanceCalculator(time: number, speed: number): number
  * @param notificationDistance The distance to calculate the GeoFence
  */
 export async function calculateGeoFence(pattern: IPattern, stopId: string, notificationDistance: number) : Promise<Feature<Polygon | MultiPolygon, any>> {
-	const distanceBuffer = notificationDistance
 
 	//Find Stop in pattern
 	const stop = pattern.path.find(path => path.stop.id === stopId);
@@ -131,8 +130,8 @@ export async function calculateGeoFence(pattern: IPattern, stopId: string, notif
 	const nearestPointOnLine = turf.nearestPointOnLine(feature, turf.point([Number(stop.stop.lon), Number(stop.stop.lat)]));
 	
 	const split = turf.lineSplit(feature, nearestPointOnLine);
-	const stopDistance = turf.length(split.features[0], { units: 'kilometers' });
-	const lineSliceAlong = turf.lineSliceAlong(split.features[0], stopDistance - distanceBuffer, stopDistance, { units: 'kilometers' });
+	const stopDistance = turf.length(split.features[0], { units: 'meters' });
+	const lineSliceAlong = turf.lineSliceAlong(split.features[0], stopDistance - notificationDistance, stopDistance, { units: 'meters' });
 
 	return turf.buffer(lineSliceAlong, 20, { units: 'meters' })!
 }

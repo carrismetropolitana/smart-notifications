@@ -58,7 +58,8 @@ class NotificationsService {
 
     async deleteNotification(id: string) : Promise<void> {
         try {
-            await this.redisService.del(`notification:${id}`);
+            const keys = await this.redisService.keys(`notification:*:${id}`);
+            keys.length && await this.redisService.del(keys); 
         } catch (error: any) {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }

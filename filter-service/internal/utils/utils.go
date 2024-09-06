@@ -98,7 +98,7 @@ func GetCurrentSecondInDay() int {
 func GetCurrentWeekDay() string {
 	now := time.Now()
 	weekday := now.Weekday()
-	return weekday.String()
+	return strings.ToLower(weekday.String())
 }
 
 /**

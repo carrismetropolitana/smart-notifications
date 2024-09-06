@@ -4,6 +4,8 @@ import { FastifyServerOptions } from 'fastify';
 import FastifyService from '@/services/fastify.service';
 import RedisService from './services/redis.service';
 import StopsService from './services/stops.service';
+import PatternService from './services/pattern.service';
+import ShapeService from './services/shape.service';
 
 /* * */
 
@@ -23,7 +25,9 @@ const options: FastifyServerOptions = {
 async function main() {
 
 	// Start Stops Service
-	StopsService.getInstance(process.env.STOPS_SERVICE_URL as string);
+	StopsService.getInstance(process.env.API_URL as string + '/stops');
+	PatternService.getInstance(process.env.API_URL as string + '/patterns');
+	ShapeService.getInstance(process.env.API_URL as string + '/shapes');
 	
 	// Connect to Redis
 	const redisService = RedisService.getInstance({ url: process.env.REDIS_URL as string });

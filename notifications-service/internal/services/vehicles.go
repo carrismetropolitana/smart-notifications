@@ -33,12 +33,12 @@ func GetVehiclesHashMap(myHashMap *map[string]models.Vehicle) {
 
 	// This loop runs every time the ticker ticks
 	for range ticker.C {
-	hashmap, err := getVehiclesHashMap() // Call the function to execute cron jobs\
-	if err != nil {
-		log.Println(err)
-	}
+		hashmap, err := getVehiclesHashMap() // Call the function to execute cron jobs\
+		if err != nil {
+			log.Println(err)
+		}
 
-	*myHashMap = hashmap
+		*myHashMap = hashmap
 	}
 }
 

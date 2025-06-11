@@ -58,7 +58,7 @@ func getStops() ([]models.Stop, error) {
 	stops := []models.Stop{}
 
 	// Make a GET request to the URL
-	url :=  os.Getenv("API_URL") + "/stops"
+	url :=  os.Getenv("CMET_API_URL") + "/stops"
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err

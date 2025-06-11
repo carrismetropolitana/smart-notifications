@@ -25,9 +25,9 @@ const options: FastifyServerOptions = {
 async function main() {
 
 	// Start Stops Service
-	StopsService.getInstance(process.env.API_URL as string + '/stops');
-	PatternService.getInstance(process.env.API_URL as string + '/patterns');
-	ShapeService.getInstance(process.env.API_URL as string + '/shapes');
+	StopsService.getInstance(process.env.CMET_API_URL as string + '/stops');
+	PatternService.getInstance(process.env.CMET_API_URL as string + '/patterns');
+	ShapeService.getInstance(process.env.CMET_API_URL as string + '/shapes');
 	
 	// Connect to Redis
 	const redisService = RedisService.getInstance({ url: process.env.REDIS_URL as string });

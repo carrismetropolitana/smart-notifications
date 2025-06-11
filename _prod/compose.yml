@@ -39,47 +39,6 @@ services:
     # # # # # # # # # # # # # # # # # # # # #
     # # # # # # # # # # # # # # # # # # # # #
 
-    filter-service:
-        image: ghcr.io/carrismetropolitana/smart-notifications-filter-service:production
-        restart: always
-        env_file:
-            - ./.env.production
-        depends_on:
-            redisdb:
-                condition: service_healthy
-                restart: true
-
-    # # # # # # # # # # # # # # # # # # # # #
-    # # # # # # # # # # # # # # # # # # # # #
-
-    notifications-service:
-        image: ghcr.io/carrismetropolitana/smart-notifications-notifications-service:production
-        restart: always
-        env_file:
-            - ./.env.production
-        depends_on:
-            redisdb:
-                condition: service_healthy
-                restart: true
-
-    # # # # # # # # # # # # # # # # # # # # #
-    # # # # # # # # # # # # # # # # # # # # #
-
-    server:
-        image: ghcr.io/carrismetropolitana/smart-notifications-api-server:production
-        restart: always
-        ports:
-            - 5050:5050
-        env_file:
-            - ./.env.production
-        depends_on:
-            redisdb:
-                condition: service_healthy
-                restart: true
-
-    # # # # # # # # # # # # # # # # # # # # #
-    # # # # # # # # # # # # # # # # # # # # #
-
     certbot:
         image: certbot/certbot
         deploy:
@@ -106,7 +65,7 @@ services:
         volumes:
             - redisdbdata:/data/db
         env_file:
-            - ./.env.production
+            - ./.env
         healthcheck:
             test: echo 'db.runCommand("ping").ok' | mongosh
             interval: 10s
@@ -138,3 +97,44 @@ services:
             - 80:80
             - 443:443
         command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    filter-service:
+        image: ghcr.io/carrismetropolitana/smart-notifications-filter-service:production
+        restart: always
+        env_file:
+            - ./.env
+        depends_on:
+            redisdb:
+                condition: service_healthy
+                restart: true
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    notifications-service:
+        image: ghcr.io/carrismetropolitana/smart-notifications-notifications-service:production
+        restart: always
+        env_file:
+            - ./.env
+        depends_on:
+            redisdb:
+                condition: service_healthy
+                restart: true
+
+    # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # #
+
+    server:
+        image: ghcr.io/carrismetropolitana/smart-notifications-api-server:production
+        restart: always
+        ports:
+            - 5050:5050
+        env_file:
+            - ./.env
+        depends_on:
+            redisdb:
+                condition: service_healthy
+                restart: true

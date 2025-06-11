@@ -1,5 +1,5 @@
 # # #
-name: tml-smart-notifications-local
+name: cmet-smart-notifications
 
 volumes:
     redis:

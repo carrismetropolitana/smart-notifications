@@ -68,7 +68,7 @@ func getVehicles() ([]models.Vehicle, error) {
 	vehicles := []models.Vehicle{}
 
 	// Make a GET request to the URL
-	url :=  os.Getenv("API_URL") + "/vehicles"
+	url :=  os.Getenv("CMET_API_URL") + "/vehicles"
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err

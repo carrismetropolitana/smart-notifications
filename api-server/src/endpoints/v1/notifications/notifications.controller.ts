@@ -37,6 +37,11 @@ class NotificationsController {
         const id = request.params.id;
         return this.service.deleteNotification(id);
     }
+
+    async getNotificationsByUserId(request: FastifyRequest<{ Params: { id: string } }>) {
+        const id = request.params.id;
+        return this.service.getNotificationsByUserId(id);
+    }
 }
 
 export default NotificationsController;

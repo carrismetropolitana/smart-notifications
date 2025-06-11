@@ -17,6 +17,7 @@ server.register((instance, opts, next) => {
 
     instance.post('/', controller.createNotification);
     instance.delete('/:id', controller.deleteNotification);
+    instance.get('/user/:id', controller.getNotificationsByUserId);
 
     next();
 }, { prefix: namespace });

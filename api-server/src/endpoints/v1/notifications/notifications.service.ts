@@ -18,6 +18,13 @@ class NotificationsService {
         this.patternService = PatternService.getInstance();
     }
 
+    
+    /**
+     * Creates a new notification for a user
+     * @param notification The notification object containing user preferences
+     * @returns The created notification data including the calculated geofence
+     * @throws HttpException if pattern/stop not found or other errors occur
+     */
     async createNotification(notification: INotification) : Promise<any> {
         try {
             const pattern = await this.patternService.getPattern(notification.pattern_id);
@@ -56,10 +63,34 @@ class NotificationsService {
         }
     }
 
+    /**
+     * Deletes all notifications for a given notification ID
+     * @param id The notification ID to delete
+     * @throws HttpException if there is an error deleting the notifications
+     */
     async deleteNotification(id: string) : Promise<void> {
         try {
             const keys = await this.redisService.keys(`notification:*:${id}`);
             keys.length && await this.redisService.del(keys); 
+        } catch (error: any) {
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
+
+    /**
+     * Retrieves all notifications for a given user ID
+     * @param userId The user ID to retrieve notifications for
+     * @returns An array of notification objects
+     * @throws HttpException if there is an error retrieving the notifications
+     */
+    async getNotificationsByUserId(userId: string) : Promise<any> {
+        try {
+            const keys = await this.redisService.keys(`notification:*:${userId}`);
+            const notifications = await Promise.all(keys.map(async key => {
+                const notification = await this.redisService.get(key);
+                return notification ? JSON.parse(notification) : null;
+            }));
+            return notifications;
         } catch (error: any) {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
